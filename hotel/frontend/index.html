@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel/Hostel Management System</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Login Container -->
+    <div class="login-wrapper" id="login-container">
+        <div class="login-box">
+            <div class="logo" style="justify-content: center; margin-bottom: 1rem; padding: 0;">
+                <i class="fa-solid fa-hotel"></i>
+                <h2>HostelStay</h2>
+            </div>
+            <h3 style="text-align: center; margin-bottom: 2rem; color: var(--text-muted);">Please Login to Continue</h3>
+
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="login-role">Login As</label>
+                    <select id="login-role" required>
+                        <option value="student">Student</option>
+                        <option value="warden">Warden / Admin</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="login-id">User ID</label>
+                    <input type="text" id="login-id" placeholder="e.g. S101 or W01" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password (Mock)</label>
+                    <input type="password" id="login-password" placeholder="Any password works" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-full"
+                    style="padding: 12px; font-size: 1.1rem;">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="layout" id="main-layout" style="display: none;">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-hotel"></i>
+                <h2>HostelStay</h2>
+            </div>
+            <nav class="nav-links">
+                <a href="#dashboard" class="nav-item active" data-target="dashboard">
+                    <i class="fa-solid fa-chart-pie"></i> Dashboard
+                </a>
+                <a href="#students" class="nav-item" data-target="students">
+                    <i class="fa-solid fa-user-graduate"></i> Student Details
+                </a>
+                <a href="#rooms" class="nav-item" data-target="rooms">
+                    <i class="fa-solid fa-bed"></i> Room Availability
+                </a>
+                <a href="#checkinout" class="nav-item" data-target="checkinout">
+                    <i class="fa-solid fa-right-left"></i> Check In / Out
+                </a>
+                <a href="#wardens" class="nav-item" data-target="wardens">
+                    <i class="fa-solid fa-id-badge"></i> Warden Details
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="search-bar">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+                <div class="topbar-actions">
+                    <div class="date-time" id="datetime"></div>
+                    <div class="profile" style="position: relative;">
+                        <img src="https://ui-avatars.com/api/?name=Admin+User&background=6366f1&color=fff"
+                            alt="Admin Profile" onclick="toggleProfileDropdown()">
+                        <div class="profile-dropdown" id="profile-dropdown" style="display: none; position: absolute; right: 0; top: 50px; background: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border-radius: 8px; padding: 10px; z-index: 100; min-width: 130px;">
+                            <button class="btn w-full" onclick="handleLogout()" style="background-color: var(--danger); color: white; padding: 8px 16px; border: none; font-size: 0.95rem;">
+                                <i class="fa-solid fa-right-from-bracket"></i> Logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Views -->
+            <div class="view-container">
+
+                <!-- Dashboard View -->
+                <section id="dashboard" class="view active">
+                    <div class="header-section">
+                        <h1>Dashboard Overview</h1>
+                        <p>Welcome back! Here's what's happening at the hostel.</p>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: rgba(99, 102, 241, 0.1); color: #6366f1;"><i
+                                    class="fa-solid fa-users"></i></div>
+                            <div class="stat-details">
+                                <h3 id="stat-total-students">0</h3>
+                                <p>Total Students</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;"><i
+                                    class="fa-solid fa-door-open"></i></div>
+                            <div class="stat-details">
+                                <h3 id="stat-available-rooms">0</h3>
+                                <p>Available Rooms</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;"><i
+                                    class="fa-solid fa-door-closed"></i></div>
+                            <div class="stat-details">
+                                <h3 id="stat-occupied-rooms">0</h3>
+                                <p>Occupied Rooms</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;"><i
+                                    class="fa-solid fa-id-badge"></i></div>
+                            <div class="stat-details">
+                                <h3 id="stat-total-wardens">0</h3>
+                                <p>Active Wardens</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="recent-section">
+                        <h2>Recent Activity</h2>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Action</th>
+                                        <th>Student</th>
+                                        <th>Room</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recent-activity-body">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Students View -->
+                <section id="students" class="view">
+                    <div class="header-section">
+                        <h1>Student Details</h1>
+                        <button class="btn btn-primary" onclick="toggleModal('add-student-modal')"><i
+                                class="fa-solid fa-plus"></i> Add Student</button>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Course</th>
+                                    <th>Contact</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="student-table-body">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Rooms View -->
+                <section id="rooms" class="view">
+                    <div class="header-section">
+                        <h1>Room Management</h1>
+                        <p>View room availability and occupied details.</p>
+                    </div>
+
+                    <div class="room-filters">
+                        <button class="filter-btn active" data-filter="all">All Rooms</button>
+                        <button class="filter-btn" data-filter="available">Available</button>
+                        <button class="filter-btn" data-filter="occupied">Occupied</button>
+                    </div>
+
+                    <div class="rooms-grid" id="rooms-grid">
+                        <!-- Populated by JS -->
+                    </div>
+                </section>
+
+                <!-- Check In / Out View -->
+                <section id="checkinout" class="view">
+                    <div class="header-section">
+                        <h1>Check In / Check Out</h1>
+                    </div>
+
+                    <div class="form-container">
+                        <form id="checkin-out-form" onsubmit="handleCheckInOut(event)">
+                            <div class="form-group">
+                                <label for="action-type">Action</label>
+                                <select id="action-type" required onchange="toggleCheckinFields()">
+                                    <option value="checkin">Check In (Assign Room)</option>
+                                    <option value="checkout">Check Out (Release Room)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="select-student">Select Student</label>
+                                <select id="select-student" required>
+                                    <option value="">-- Choose Student --</option>
+                                    <!-- Populated by JS -->
+                                </select>
+                            </div>
+                            <div class="form-group" id="room-selection-group">
+                                <label for="select-room">Assign Room</label>
+                                <select id="select-room" required>
+                                    <option value="">-- Choose Available Room --</option>
+                                    <!-- Populated by JS -->
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-full">Complete Transaction</button>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- Wardens View -->
+                <section id="wardens" class="view">
+                    <div class="header-section">
+                        <h1>Warden Details</h1>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Warden Name</th>
+                                    <th>Shift / Block</th>
+                                    <th>Contact</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="warden-table-body">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Student Modal -->
+    <div class="modal" id="add-student-modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="toggleModal('add-student-modal')">&times;</span>
+            <h2>Register New Student</h2>
+            <form id="add-student-form" onsubmit="handleAddStudent(event)">
+                <div class="form-group">
+                    <label for="student-name">Full Name</label>
+                    <input type="text" id="student-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="student-course">Course/Major</label>
+                    <input type="text" id="student-course" required>
+                </div>
+                <div class="form-group">
+                    <label for="student-contact">Contact Number</label>
+                    <input type="tel" id="student-contact" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-full">Register Student</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Book Room Modal -->
+    <div class="modal" id="book-room-modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="toggleModal('book-room-modal')">&times;</span>
+            <h2>Book Room Online <span id="booking-room-number-display" class="badge info"></span></h2>
+            <form id="book-room-form" onsubmit="handleOnlineBooking(event)">
+                <input type="hidden" id="booking-room-number">
+                <div class="form-group">
+                    <label for="booking-name">Full Name</label>
+                    <input type="text" id="booking-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="booking-course">Course/Major</label>
+                    <input type="text" id="booking-course" required>
+                </div>
+                <div class="form-group">
+                    <label for="booking-contact">Contact Number</label>
+                    <input type="tel" id="booking-contact" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-full">Confirm Booking</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+
+</html>
